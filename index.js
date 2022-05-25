@@ -28,12 +28,43 @@ async function run() {
         app.post('/user', async (req, res) => {
             const newUser = req.body;
             const query = { email: newUser.email }
+
             const exists = await orderCollection.findOne(query);
             if (exists) {
                 return res.send({ success: false, user: exists })
             }
             const result = await userCollection.insertOne(newUser);
             res.send({ success: true, result });
+        });
+
+        // get all users
+        app.get('/user', async (req, res) => {
+            const query = {};
+            const cursor = userCollection.find(query);
+            users = await cursor.toArray();
+            res.send(users);
+        });
+
+        // get single email
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            res.send(user);
+        })
+
+        // get single email information
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email);
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
         })
         // get all product
         app.get('/product', async (req, res) => {
