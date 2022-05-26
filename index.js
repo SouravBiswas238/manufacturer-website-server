@@ -95,7 +95,7 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        // put single email information
+        // put single email information in database
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             console.log(email);
