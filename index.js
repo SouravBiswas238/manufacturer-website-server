@@ -34,16 +34,7 @@ function verifyJWT(req, res, next) {
         next();
     });
 }
-const verifyAdmin = async (req, res, next) => {
-    const requester = req.decoded.email;
-    const requesterAccount = await userCollection.findOne({ email: requester });
-    if (requesterAccount.role === 'admin') {
-        next();
-    }
-    else {
-        res.status(403).send({ message: 'forbidden' });
-    }
-}
+
 
 async function run() {
     try {
@@ -54,13 +45,24 @@ async function run() {
         const userCollection = client.db("flash-electronic").collection("user");
         const reviewCollection = client.db("flash-electronic").collection("review");
 
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'forbidden' });
+            }
+        }
+
         // post user information
         app.post('/user', async (req, res) => {
             const newUser = req.body;
             const query = { email: newUser.email }
 
-            const token = jwt.sign({ email: newUser.email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-            const exists = await orderCollection.findOne(query);
+            const token = jwt.sign({ email: newUser.email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5h' });
+            const exists = await userCollection.findOne(query);
             if (exists) {
                 return res.send({ success: false, user: exists, token })
             }
@@ -84,12 +86,15 @@ async function run() {
             res.send(user);
         })
         // get admin email
-        app.get('/admin/:email', async (req, res) => {
+        app.get('/user/admin/:email', async (req, res) => {
+
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
+            console.log(user);
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
+
         // put single email information
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
