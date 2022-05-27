@@ -6,13 +6,11 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const query = require('express/lib/middleware/query');
 
 // middle wire
 app.use(cors());
 app.use(express.json());
-
-
-
 
 
 
@@ -90,7 +88,6 @@ async function run() {
 
             const email = req.params.email;
             const user = await userCollection.findOne({ email: email });
-            console.log(user);
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
         })
@@ -98,7 +95,6 @@ async function run() {
         // put single email information in database
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
-            console.log(email);
             const user = req.body;
             const filter = { email: email };
             const options = { upsert: true };
@@ -119,6 +115,29 @@ async function run() {
             res.send(result);
         })
 
+        // post Single product
+        app.post('/product', async (req, res) => {
+            const newProduct = req.body;
+            const query = { name: newProduct.name }
+            console.log(query)
+            const exists = await productCollection.findOne(query);
+            if (exists) {
+                return res.send({ success: false, product: exists })
+            }
+            const result = await productCollection.insertOne(newProduct);
+            res.send({ success: true, result });
+        });
+
+        // delete Single product
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+
+
+        });
+
         // get all product
         app.get('/product', async (req, res) => {
             const query = {};
@@ -136,7 +155,7 @@ async function run() {
         })
 
         // post ordering data
-        app.post('/order', verifyJWT, async (req, res) => {
+        app.post('/order', verifyJWT, verifyAdmin, async (req, res) => {
             const order = req.body;
             const query = { orderName: order.orderName, minOrder: order.minOrder }
             const exists = await orderCollection.findOne(query);
@@ -145,6 +164,12 @@ async function run() {
             }
             const result = await orderCollection.insertOne(order);
             res.send({ success: true, result });
+        })
+        // get all product
+        app.get('/order', async (req, res) => {
+            const query = {}
+            const result = await orderCollection.find(query).toArray();
+            return res.send(result);
         })
         // get single email order
         app.get('/order/:email', verifyJWT, async (req, res) => {
