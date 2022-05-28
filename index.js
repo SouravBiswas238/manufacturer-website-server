@@ -155,9 +155,9 @@ async function run() {
         })
 
         // post ordering data
-        app.post('/order', verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/order', verifyJWT, async (req, res) => {
             const order = req.body;
-            const query = { orderName: order.orderName, minOrder: order.minOrder }
+            const query = { orderName: order.orderName, minOrder: order.myOrder }
             const exists = await orderCollection.findOne(query);
             if (exists) {
                 return res.send({ success: false, order: exists })
