@@ -115,6 +115,7 @@ async function run() {
             res.send(result);
         })
 
+
         // post Single product
         app.post('/product', async (req, res) => {
             const newProduct = req.body;
@@ -134,8 +135,6 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await productCollection.deleteOne(query);
             res.send(result);
-
-
         });
 
         // get all product
@@ -157,7 +156,7 @@ async function run() {
         // post ordering data
         app.post('/order', verifyJWT, async (req, res) => {
             const order = req.body;
-            const query = { orderName: order.orderName, minOrder: order.myOrder }
+            const query = { orderName: order.orderName, myOrder: order.myOrder }
             const exists = await orderCollection.findOne(query);
             if (exists) {
                 return res.send({ success: false, order: exists })
@@ -165,12 +164,13 @@ async function run() {
             const result = await orderCollection.insertOne(order);
             res.send({ success: true, result });
         })
-        // get all product
+        // get all order
         app.get('/order', async (req, res) => {
             const query = {}
             const result = await orderCollection.find(query).toArray();
             return res.send(result);
         })
+
         // get single email order
         app.get('/order/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
@@ -185,9 +185,14 @@ async function run() {
                 return res.status(403).send({ message: 'forbidden access' });
             }
 
-
         })
-
+        // delete Single order
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.send(result);
+        });
 
         // post review data
         app.post('/review', async (req, res) => {
