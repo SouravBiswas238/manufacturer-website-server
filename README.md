@@ -1,9 +1,10 @@
 # Flash Electronic
 # live site(https://flash-electronic.web.app/)
+# client Side github:(https://github.com/SouravBiswas238/manufacturer-website-client)
 
 # What done in this project
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-This project is a MERN stack project where you can sale electric parts. There is an admin dashboard implemented from where you can keep track and manage the product stock and the orders placed by the users.
+This project is a MERN stack project where you can sell electric parts. There is an admin dashboard implemented from where you can keep track and manage the product stock and the orders placed by the users.
 
 In order to buy any product from the website, users need to create an account using email-password/ google. Users can order according to their desire and pay using the payment method. Users can use the review feature. Users can also cancel their orders and change their minds about payment.
 
