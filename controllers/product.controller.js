@@ -7,7 +7,6 @@ module.exports.getAllProducts = async (req, res, next) => {
     try {
         const { limit, page } = req.query;
         const db = getDb();
-        console.log("hited");
 
         // cursor => toArray(), forEach()
         const products = await db.collection("product").find({})

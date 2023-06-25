@@ -6,6 +6,9 @@ const port = process.env.PORT || 5000;
 const dbConnect = require("./utils/dbConnect");
 const toolsRoutes = require("./routes/v1/tools.route.js");
 const productsRoute = require("./routes/v1/products.route.js");
+const userRoute = require("./routes/v1/user.route.js");
+const orderRoute = require("./routes/v1/order.route.js");
+const reviewRoute = require("./routes/v1/review.route.js");
 const errorHandler = require("./middleware/errorHandler");
 const { connectToServer } = require("./utils/dbConnect");
 
@@ -31,19 +34,13 @@ connectToServer((err) => {
 
 // app.use("/api/v1/tools", toolsRoutes);
 app.use("/api/v1/products", productsRoute);
+app.use("/user", userRoute);
+app.use("/order", orderRoute);
+app.use("/review", reviewRoute);
 
 
 
-// app.get("/", (req, res) => {
-//     // res.send("Hello World");
-//     // res.sendFile(__dirname + "/public/test.html");
-//     res.render("home.ejs", {
-//         id: 5,
-//         user: {
-//             name: "test",
-//         },
-//     });
-// });
+
 
 app.all("*", (req, res) => {
     res.send("NO route found.");
